@@ -1,6 +1,6 @@
 const int redPin = 5, bluePin = 9, greenPin = 7, buttonPin = 11, power = 3;
 int buttonPressed;
-int period; // 7 colors per  
+int period; // delay between switching  
 
 int colorState;
 
@@ -49,7 +49,7 @@ void setup() {
   pinMode(buttonPin, INPUT);
   pinMode(power, OUTPUT);
   buttonPressed = LOW;
-  period = 500;
+  period = 2000;
   digitalWrite(power, HIGH);
   colorState = 0;
   setColor(colorState);
