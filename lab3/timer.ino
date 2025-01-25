@@ -1,14 +1,15 @@
-// Task 7 Countdown
-//  Modify your sketch so that your counter counts down from 100 seconds and stops at 0. This and the
-//  remaining task should be solved without making any changes to the hardware circuit that you have
-//  already built.
-
+//  Task 8 Minutes and seconds
+//  Go back to counting up from zero, but regard the 4 digits as the display of a clock with 2 digits for
+//  the minutes and 2 digits for the seconds. 
+//  Modify your sketch so that your seconds do not go above 59. Specifically, when your counter
+//  reaches 0059 it should proceed to 0100, when it reaches 0159 it should proceed to 0200, and so on
 
 const int dataPin=8;
 const int clockPin=10;
 const int latchPin=9;
 const int thousandsPin = 2, hundredsPin = 3, tensPin = 4, onesPin = 5; 
-int time;
+int tenMinutes, minutes, tenSeconds, seconds;
+int t;
 
 
 int digit2segments[]=
@@ -35,7 +36,7 @@ void setup()
   pinMode(tensPin, OUTPUT);
   pinMode(onesPin, OUTPUT);
   Serial.begin(9600);
-  time = 0; 
+  t = 100000; 
 }
 
 int getThousands(int num) {
@@ -74,19 +75,17 @@ void writeDigit(int value, int digit) {
 
 void loop() 
 {
-  int t = (101000-millis())/1000;  
-  if (t >= time) {
-    // Serial.println(t);
-    writeDigit(getThousands(t), 0);
-    writeDigit(getHundreds(t), 1);
-    writeDigit(getTens(t), 2);
-    writeDigit(getOnes(t), 3);
+  t = millis()/1000;
+  tenMinutes = t/600%10;
+  minutes = t/60%10;
+  tenSeconds = t/10%6;
+  seconds = t%10;
+  // if (t <= 6000) {
+    writeDigit(tenMinutes, 0);
+    writeDigit(minutes, 1);
+    writeDigit(tenSeconds, 2);
+    writeDigit(seconds , 3);
     delay(1);
-  }
-  else {
-    for (int i = 0; i < 4; i++) {
-      writeDigit(0, i);
-    }
-    delay(10);
-  }
+  // }
 }
+
