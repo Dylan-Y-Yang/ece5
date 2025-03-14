@@ -60,11 +60,46 @@ for (size_t button = 0; button <= buttonCount; ++button)
     Serial.println(59 + button);
   }
 }
+
+readEncoder(ENCODER1_CLK, ENCODER1_DT, lastEncoder1StateCLK, 21); 
+readEncoder(ENCODER2_CLK, ENCODER2_DT, lastEncoder2StateCLK, 22);
 MidiUSB.flush(); 
 last_state = state;
 }
 
+void readEncoder(int clkPin, int dtPin, int &lastStateCLK, int midiCC) {
+ int currentStateCLK = digitalRead(clkPin);
+ if (currentStateCLK != lastStateCLK) {
+   int dtState = digitalRead(dtPin);
 
+   static int midiValue = 64; 
+
+
+   if (dtState != currentStateCLK) {
+     midiValue += 5;  // Increase (CW)
+   } else {
+     midiValue -= 5;  // Decrease (CCW)
+   }
+
+   midiValue = constrain(midiValue, 0, 127);
+  
+   sendMIDIControlChange(midiCC, midiValue);
+   Serial.print("MIDI CC ");
+   Serial.print(midiCC);
+   Serial.print(": ");
+   Serial.println(midiValue);
+
+
+   lastStateCLK = currentStateCLK;
+ }
+}
+
+
+
+void sendMIDIControlChange(byte control, byte value) {
+ midiEventPacket_t event = {0x0B, 0xB0 | MIDI_CHANNEL, control, value};
+ MidiUSB.sendMIDI(event);
+}
 
 void noteOn(byte channel, byte pitch, byte velocity)
 {
